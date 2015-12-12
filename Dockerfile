@@ -32,7 +32,7 @@ RUN a2enmod rewrite ssl && \
 # Disable all Apache modules (need to disable specific ones first to avoid error codes)
 RUN printf "*" | a2dismod -f
 # Only enable essential Apache modules.
-RUN a2enmod access_compat actions alias authz_host deflate dir expires headers mime rewrite ssl fastcgi proxy http2 mpm_prefork proxy_fcgi
+RUN a2enmod access_compat actions alias authz_host deflate dir expires headers mime rewrite ssl fastcgi proxy http2 mpm_event proxy_fcgi
 RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.conf
 
 # Allow for Overrides in path /var/www/
@@ -80,6 +80,19 @@ RUN echo "export COMPOSER_HOME=/home/ubuntu/.composer" >> /etc/bash.bashrc && \
     curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
+# Install Twig C extension.
+#RUN wget https://github.com/twigphp/Twig/archive/v1.23.1.tar.gz && \
+#    tar zxvf v1.23.1.tar.gz && \
+#    rm v1.23.1.tar.gz && \
+#    cd Twig-1.23.1/ext/twig/ && \
+#    phpize && \
+#    ./configure && \
+#    make && \
+#    make install
+#COPY twig.ini /etc/php/7.0/fpm/conf.d/20-twig.ini
+
+RUN wget -O /var/www/opcache.php https://raw.githubusercontent.com/rlerdorf/opcache-status/master/opcache.php
+
 # Add tools installed via composer to PATH and Drupal logs to syslog
 RUN echo "export PATH=/home/ubuntu/.composer/vendor/bin:$PATH" >> /etc/bash.bashrc && \
     echo "local0.* /var/log/drupal.log" >> /etc/rsyslog.conf
@@ -113,11 +126,6 @@ RUN ln -s /var/www /home/ubuntu/www && \
 # Supervisor
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Grant ubuntu user access to sudo with no password.
-RUN apt-get -y install sudo && \
-    echo "ubuntu ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    usermod -a -G sudo ubuntu
 
 RUN service apache2 restart
 RUN service php7.0-fpm start

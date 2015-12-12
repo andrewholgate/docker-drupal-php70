@@ -64,7 +64,6 @@ sudo docker exec -it dockerdrupalphp70_drupalphp70web_1 su - ubuntu
 
 # TODO
 
-- Replace MPM Prefork with MPM Event
 - Switch to use Unix socket for FPM
 - Install upload progress Apache module
-- GUI for PHP OpCache, eg [OpCacheGUI](https://github.com/PeeHaa/OpCacheGUI)
+- Add [Twig C extension](http://twig.sensiolabs.org/doc/installation.html) when [compatible with PHP7](https://github.com/twigphp/Twig/issues/1935#issuecomment-162519975)
