@@ -4,7 +4,7 @@ MAINTAINER Andrew Holgate <andrewholgate@yahoo.com>
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
-# Repositories for PHP7.0, Apache2 (wtih HTTP/2) and git
+# Repositories for PHP7.0, Apache2 (with HTTP/2) and git
 RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php-7.0 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:git-core/ppa
@@ -54,16 +54,16 @@ RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install g++ make binutils autoconf automake \
     autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libev-dev libevent-dev \
     libjansson-dev libjemalloc-dev cython python3-dev python-setuptools
-RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.5.0/nghttp2-1.5.0.tar.gz  && \
-    tar -xvf nghttp2-1.5.0.tar.gz && \
-    cd nghttp2-1.5.0/ && \
+RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.6.0/nghttp2-1.6.0.tar.gz && \
+    tar -xvf nghttp2-1.6.0.tar.gz && \
+    cd nghttp2-1.6.0/ && \
     autoreconf -i && \
     automake && \
     autoconf && \
     ./configure && \
     make && \
     make install && \
-    cd .. && rm -Rf nghttp2-1.5.0 nghttp2-1.5.0.tar.gz
+    cd .. && rm -Rf nghttp2-1.6.0 nghttp2-1.6.0.tar.gz
 
 # Install cURL with HTTP/2 support
 RUN wget http://curl.haxx.se/download/curl-7.46.0.tar.gz && \
@@ -134,7 +134,8 @@ COPY run.sh /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run
 
 # Clean-up installation.
-RUN DEBIAN_FRONTEND=noninteractive apt-get autoclean && apt-get autoremove
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y autoclean && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 
 EXPOSE 80 443
 
