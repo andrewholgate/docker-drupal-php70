@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano vim sysstat ioto
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install curl apache2 mysql-client supervisor libapache2-mod-fastcgi openssh-client make libpcre3-dev git
 # PHP 7.0
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0 php7.0-dev
 
 # Add ubuntu user.
 RUN useradd -ms /bin/bash ubuntu
@@ -39,9 +39,13 @@ RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.c
 RUN sed -i '166s/None/All/' /etc/apache2/apache2.conf && \
     echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
+# Install pear
+#RUN wget http://pear.php.net/go-pear.phar && \
+#    php go-pear.phar && \
+#    pecl channel-update pecl.php.net
+
 # Install Uploadprogress
-#RUN pecl channel-update pecl.php.net && \
-#    pecl install uploadprogress
+#RUN pecl install uploadprogress
 #COPY uploadprogress.ini /etc/php/7.0/mods-available/uploadprogress.ini
 #RUN ln -s ../../mods-available/uploadprogress.ini /etc/php/7.0/fpm/conf.d/20-uploadprogress.ini
 
@@ -115,8 +119,49 @@ RUN mkdir -p /var/www/log && \
     ln -s /var/log/drupal.log /var/www/log/ && \
     ln -s /var/log/syslog /var/www/log/
 
+# Install Redis
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install tcl8.6
+RUN wget http://download.redis.io/releases/redis-3.0.6.tar.gz && \
+    tar xvzf redis-3.0.6.tar.gz && \
+    rm redis-3.0.6.tar.gz && \
+    cd redis-3.0.6 && \
+    make && \
+    make test && \
+    make install && \
+    cp redis.conf /etc/redis.conf && \
+    rm -Rf ../redis-3.0.6 && \
+    mkdir /var/log/redis
+
+# igbinary doesn't pass tests yet: https://github.com/igbinary/igbinary7
+#RUN wget https://github.com/igbinary/igbinary7/archive/master.tar.gz && \
+#    tar zxvf master.tar.gz && \
+#    rm -f master.tar.gz && \
+#    cd igbinary7-master && \
+#    phpize && \
+#    ./configure CFLAGS="-O2 -g" --enable-igbinary && \
+#     make && \
+#     make test && \
+#     make install && \
+#     cd .. && rm -Rf igbinary7-master
+
+# Configure with igbinary when available for PHP 7.0: https://github.com/igbinary/igbinary
+#   ./configure --enable-redis-igbinary
+# Currently using php7 branch (no tags). Should change to stable tag when available.
+RUN wget https://github.com/phpredis/phpredis/archive/php7.tar.gz && \
+    tar zxvf php7.tar.gz && \
+    rm -Rf php7.tar.gz && \
+    cd phpredis-php7/ && \
+    phpize && \
+    ./configure && \
+    make && \
+    make install && \
+    rm -Rf ../phpredis-php7
+
+COPY redis.ini /etc/php/mods-available/redis.ini
+RUN ln -s /etc/php/mods-available/redis.ini /etc/php/7.0/fpm/conf.d/20-redis.ini
+
 # Activate globstar for bash and add alias to tail log files.
-RUN echo "alias taillog='tail -f /var/www/log/syslog /var/www/log/*.log'" >> /home/ubuntu/.bash_aliases && \
+RUN echo "alias taillog='tail -f /var/www/log/syslog /var/log/redis/stderr.log /var/www/log/*.log'" >> /home/ubuntu/.bash_aliases && \
     echo "shopt -s globstar" >> /home/ubuntu/.bashrc
 
 # Set user ownership
