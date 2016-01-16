@@ -142,7 +142,7 @@ RUN wget http://download.redis.io/releases/redis-3.0.6.tar.gz && \
 #     make && \
 #     make test && \
 #     make install && \
-#     cd .. && rm -Rf igbinary7-master
+#     rm -Rf ../igbinary7-master
 
 # Configure with igbinary when available for PHP 7.0: https://github.com/igbinary/igbinary
 #   ./configure --enable-redis-igbinary
