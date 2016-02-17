@@ -8,6 +8,7 @@ For example of how to use this container, see [docker-drupal-project-example](ht
 - [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2)
 - Apache 2.4 with PHP-FPM and Prefork MPM configured for HTTP & HTTPS and with minimal modules installed.
 - MySQL 5.6 client
+- [Redis 3.x](http://redis.io/) and [phpredis](https://github.com/phpredis/phpredis) extension
 - [Linux troubleshooting tools](http://www.linuxjournal.com/magazine/hack-and-linux-troubleshooting-part-i-high-load)
 - [git](http://git-scm.com/) (latest version)
 - [Composer](https://getcomposer.org/) - PHP dependency management.

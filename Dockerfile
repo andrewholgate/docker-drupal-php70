@@ -4,6 +4,7 @@ MAINTAINER Andrew Holgate <andrewholgate@yahoo.com>
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
+
 # Repositories for PHP7.0, Apache2 (with HTTP/2) and git
 RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php-7.0 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
@@ -16,8 +17,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano vim sysstat iotop htop ethtool nmap dnsutils traceroute
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install curl apache2 mysql-client supervisor libapache2-mod-fastcgi openssh-client make libpcre3-dev git
+
 # PHP 7.0
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0 php7.0-dev
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install bash-completion
 
 # Add ubuntu user.
 RUN useradd -ms /bin/bash ubuntu
@@ -109,6 +113,10 @@ RUN sed -ri 's/^;opcache.enable=0/opcache.enable=1/g' /etc/php/7.0/fpm/php.ini &
     sed -ri 's/^expose_php\s*=\s*On/expose_php = Off/g' /etc/php/7.0/fpm/php.ini && \
     sed -ri 's/^;date.timezone\s*=/date.timezone = "Europe\/Rome"/g' /etc/php/7.0/fpm/php.ini && \
     sed -ri 's/^;error_log\s*=\s*syslog/error_log = syslog/g' /etc/php/7.0/cli/php.ini
+
+# Enable bash and git completion in interactive shells
+RUN sed -ri '32,38 s/^#//' /etc/bash.bashrc && \
+    /bin/bash -c "source /usr/share/bash-completion/completions/git"
 
 # Configurations for bash.
 RUN echo "export TERM=xterm" >> /etc/bash.bashrc
