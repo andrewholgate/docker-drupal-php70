@@ -114,8 +114,9 @@ RUN sed -ri 's/^;opcache.enable=0/opcache.enable=1/g' /etc/php/7.0/fpm/php.ini &
     sed -ri 's/^;date.timezone\s*=/date.timezone = "Europe\/Rome"/g' /etc/php/7.0/fpm/php.ini && \
     sed -ri 's/^;error_log\s*=\s*syslog/error_log = syslog/g' /etc/php/7.0/cli/php.ini
 
-# Enable bash completion in interactive shells
-RUN sed -ri '32,38 s/^#//' /etc/bash.bashrc
+# Enable bash and git completion in interactive shells
+RUN sed -ri '32,38 s/^#//' /etc/bash.bashrc && \
+    /bin/bash -c "source /usr/share/bash-completion/completions/git"
 
 # Configurations for bash.
 RUN echo "export TERM=xterm" >> /etc/bash.bashrc
