@@ -6,7 +6,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
 
 # Repositories for PHP7.0, Apache2 (with HTTP/2) and git
-RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php-7.0 && \
+RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:git-core/ppa
 
