@@ -62,25 +62,25 @@ RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install g++ make binutils autoconf automake \
     autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libev-dev libevent-dev \
     libjansson-dev libjemalloc-dev cython python3-dev python-setuptools
-RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.6.0/nghttp2-1.6.0.tar.gz && \
-    tar -xvf nghttp2-1.6.0.tar.gz && \
-    cd nghttp2-1.6.0/ && \
+RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.7.1/nghttp2-1.7.1.tar.gz && \
+    tar -xvf nghttp2-1.7.1.tar.gz && \
+    cd nghttp2-1.7.1/ && \
     autoreconf -i && \
     automake && \
     autoconf && \
     ./configure && \
     make && \
     make install && \
-    cd .. && rm -Rf nghttp2-1.6.0 nghttp2-1.6.0.tar.gz
+    cd .. && rm -Rf nghttp2-1.7.1 nghttp2-1.7.1.tar.gz
 
 # Install cURL with HTTP/2 support
-RUN wget http://curl.haxx.se/download/curl-7.46.0.tar.gz && \
-    tar -xvf curl-7.46.0.tar.gz  && \
-    cd curl-7.46.0 && \
+RUN wget http://curl.haxx.se/download/curl-7.47.1.tar.gz && \
+    tar -xvf curl-7.47.1.tar.gz && \
+    cd curl-7.47.1 && \
     ./configure --with-nghttp2=/usr/local --with-ssl && \
     make && \
     make install && \
-    cd .. && rm -Rf curl-7.46.0 curl-7.46.0.tar.gz
+    cd .. && rm -Rf curl-7.47.1 curl-7.47.1.tar.gz
 
 # Install Composer
 ENV COMPOSER_HOME /home/ubuntu/.composer
@@ -129,15 +129,15 @@ RUN mkdir -p /var/www/log && \
 
 # Install Redis
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install tcl8.6
-RUN wget http://download.redis.io/releases/redis-3.0.6.tar.gz && \
-    tar xvzf redis-3.0.6.tar.gz && \
-    rm redis-3.0.6.tar.gz && \
-    cd redis-3.0.6 && \
+RUN wget http://download.redis.io/releases/redis-3.0.7.tar.gz && \
+    tar xvzf redis-3.0.7.tar.gz && \
+    rm redis-3.0.7.tar.gz && \
+    cd redis-3.0.7 && \
     make && \
     make test && \
     make install && \
     cp redis.conf /etc/redis.conf && \
-    rm -Rf ../redis-3.0.6 && \
+    rm -Rf ../redis-3.0.7 && \
     mkdir /var/log/redis
 
 # igbinary doesn't pass tests yet: https://github.com/igbinary/igbinary7
