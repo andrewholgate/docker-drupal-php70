@@ -19,9 +19,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano vim sysstat ioto
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install curl apache2 mysql-client supervisor libapache2-mod-fastcgi openssh-client make libpcre3-dev git
 
 # PHP 7.0
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0 php7.0-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0 php7.0-dev php7.0-mbstring
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install bash-completion
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install bash-completion zip
 
 # Add ubuntu user.
 RUN useradd -ms /bin/bash ubuntu
