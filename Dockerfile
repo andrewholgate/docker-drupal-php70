@@ -43,16 +43,6 @@ RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.c
 RUN sed -i '166s/None/All/' /etc/apache2/apache2.conf && \
     echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Install pear
-#RUN wget http://pear.php.net/go-pear.phar && \
-#    php go-pear.phar && \
-#    pecl channel-update pecl.php.net
-
-# Install Uploadprogress
-#RUN pecl install uploadprogress
-#COPY uploadprogress.ini /etc/php/7.0/mods-available/uploadprogress.ini
-#RUN ln -s ../../mods-available/uploadprogress.ini /etc/php/7.0/fpm/conf.d/20-uploadprogress.ini
-
 # Install Google Page Speed for Apache
 RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb && \
     dpkg -i mod-pagespeed-stable_current_amd64.deb && \
