@@ -62,9 +62,3 @@ From the host server, add the web container IP address to the hosts file.
 # Using the container name of the web frontend.
 sudo docker exec -it dockerdrupalphp70_drupalphp70web_1 su - ubuntu
 ```
-
-# TODO
-
-- Switch to use Unix socket for FPM
-- Install upload progress Apache module
-- Add [Twig C extension](http://twig.sensiolabs.org/doc/installation.html) when [compatible with PHP7](https://github.com/twigphp/Twig/issues/1935#issuecomment-162519975)
