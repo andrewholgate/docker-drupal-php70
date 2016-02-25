@@ -6,7 +6,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
 
 # Repositories for PHP7.0, Apache2 (with HTTP/2) and git
-RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php-7.0 && \
+RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:git-core/ppa
 
@@ -43,16 +43,6 @@ RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.c
 RUN sed -i '166s/None/All/' /etc/apache2/apache2.conf && \
     echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
-# Install pear
-#RUN wget http://pear.php.net/go-pear.phar && \
-#    php go-pear.phar && \
-#    pecl channel-update pecl.php.net
-
-# Install Uploadprogress
-#RUN pecl install uploadprogress
-#COPY uploadprogress.ini /etc/php/7.0/mods-available/uploadprogress.ini
-#RUN ln -s ../../mods-available/uploadprogress.ini /etc/php/7.0/fpm/conf.d/20-uploadprogress.ini
-
 # Install Google Page Speed for Apache
 RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb && \
     dpkg -i mod-pagespeed-stable_current_amd64.deb && \
@@ -62,25 +52,25 @@ RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install g++ make binutils autoconf automake \
     autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libev-dev libevent-dev \
     libjansson-dev libjemalloc-dev cython python3-dev python-setuptools
-RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.6.0/nghttp2-1.6.0.tar.gz && \
-    tar -xvf nghttp2-1.6.0.tar.gz && \
-    cd nghttp2-1.6.0/ && \
+RUN wget https://github.com/tatsuhiro-t/nghttp2/releases/download/v1.7.1/nghttp2-1.7.1.tar.gz && \
+    tar -xvf nghttp2-1.7.1.tar.gz && \
+    cd nghttp2-1.7.1/ && \
     autoreconf -i && \
     automake && \
     autoconf && \
     ./configure && \
     make && \
     make install && \
-    cd .. && rm -Rf nghttp2-1.6.0 nghttp2-1.6.0.tar.gz
+    cd .. && rm -Rf nghttp2-1.7.1 nghttp2-1.7.1.tar.gz
 
 # Install cURL with HTTP/2 support
-RUN wget http://curl.haxx.se/download/curl-7.46.0.tar.gz && \
-    tar -xvf curl-7.46.0.tar.gz  && \
-    cd curl-7.46.0 && \
+RUN wget http://curl.haxx.se/download/curl-7.47.1.tar.gz && \
+    tar -xvf curl-7.47.1.tar.gz && \
+    cd curl-7.47.1 && \
     ./configure --with-nghttp2=/usr/local --with-ssl && \
     make && \
     make install && \
-    cd .. && rm -Rf curl-7.46.0 curl-7.46.0.tar.gz
+    cd .. && rm -Rf curl-7.47.1 curl-7.47.1.tar.gz
 
 # Install Composer
 ENV COMPOSER_HOME /home/ubuntu/.composer
@@ -129,15 +119,15 @@ RUN mkdir -p /var/www/log && \
 
 # Install Redis
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install tcl8.6
-RUN wget http://download.redis.io/releases/redis-3.0.6.tar.gz && \
-    tar xvzf redis-3.0.6.tar.gz && \
-    rm redis-3.0.6.tar.gz && \
-    cd redis-3.0.6 && \
+RUN wget http://download.redis.io/releases/redis-3.0.7.tar.gz && \
+    tar xvzf redis-3.0.7.tar.gz && \
+    rm redis-3.0.7.tar.gz && \
+    cd redis-3.0.7 && \
     make && \
     make test && \
     make install && \
     cp redis.conf /etc/redis.conf && \
-    rm -Rf ../redis-3.0.6 && \
+    rm -Rf ../redis-3.0.7 && \
     mkdir /var/log/redis
 
 # igbinary doesn't pass tests yet: https://github.com/igbinary/igbinary7

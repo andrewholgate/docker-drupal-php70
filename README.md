@@ -32,7 +32,7 @@ git clone https://github.com/andrewholgate/docker-drupal-php70.git
 cd docker-drupal-php70
 
 # Build docker image
-sudo docker build --rm=true --tag="drupal-php70" . | tee ./build.log
+sudo docker build --rm=true --no-cache --tag="drupal-php70" . | tee ./build.log
 ```
 
 ## Build Project using Docker Compose
@@ -43,7 +43,7 @@ cp docker-compose.yml.dist docker-compose.yml
 vim docker-compose.yml
 
 # Build docker containers using Docker Compose.
-sudo docker-compose build
+sudo docker-compose build --no-cache
 sudo docker-compose up -d
 ```
 
@@ -53,7 +53,7 @@ From the host server, add the web container IP address to the hosts file.
 
 ```bash
 # Add IP address to hosts file.
-./hosts.sh
+./host.sh
 ```
 
 ## Logging into Web Front-end
@@ -62,9 +62,3 @@ From the host server, add the web container IP address to the hosts file.
 # Using the container name of the web frontend.
 sudo docker exec -it dockerdrupalphp70_drupalphp70web_1 su - ubuntu
 ```
-
-# TODO
-
-- Switch to use Unix socket for FPM
-- Install upload progress Apache module
-- Add [Twig C extension](http://twig.sensiolabs.org/doc/installation.html) when [compatible with PHP7](https://github.com/twigphp/Twig/issues/1935#issuecomment-162519975)
