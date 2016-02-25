@@ -32,7 +32,7 @@ git clone https://github.com/andrewholgate/docker-drupal-php70.git
 cd docker-drupal-php70
 
 # Build docker image
-sudo docker build --rm=true --tag="drupal-php70" . | tee ./build.log
+sudo docker build --rm=true --no-cache --tag="drupal-php70" . | tee ./build.log
 ```
 
 ## Build Project using Docker Compose
@@ -43,7 +43,7 @@ cp docker-compose.yml.dist docker-compose.yml
 vim docker-compose.yml
 
 # Build docker containers using Docker Compose.
-sudo docker-compose build
+sudo docker-compose build --no-cache
 sudo docker-compose up -d
 ```
 
