@@ -7,7 +7,7 @@ For example of how to use this container, see [docker-drupal-project-example](ht
 - PHP 7.0.x with production settings.
 - [HTTP/2](https://en.wikipedia.org/wiki/HTTP/2)
 - Apache 2.4 with [PHP-FPM](https://wiki.apache.org/httpd/PHP-FPM) and [event MPM](https://httpd.apache.org/docs/2.4/mod/event.html) configured for HTTP & HTTPS and with minimal modules installed.
-- MySQL 5.6 client
+- MySQL 5.7 client
 - [Redis 3.x](http://redis.io/) and [phpredis](https://github.com/phpredis/phpredis) extension
 - [Google Page Speed](https://developers.google.com/speed/pagespeed/module/) for Apache
 - cURL with [HTTP/2 support](https://nghttp2.org/)
@@ -22,8 +22,8 @@ For example of how to use this container, see [docker-drupal-project-example](ht
 ## Create Presistant Database data-only container
 
 ```bash
-# Build database image based off MySQL 5.6
-sudo docker run -d --name mysql-drupal-php70 mysql:5.6 --entrypoint /bin/echo MySQL data-only container for Drupal PHP 7.0 MySQL
+# Build database image based off MySQL 5.7
+sudo docker run -d --name mysql-drupal-php69 mysql:5.7 --entrypoint /bin/echo MySQL data-only container for Drupal PHP 7.0 MySQL
 ```
 
 ## Build Drupal Base Image
