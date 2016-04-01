@@ -1,4 +1,4 @@
-Dockerised Drupal container using PHP 7.0 on Ubuntu 14.04 and configured with Drupal tools.
+Dockerised Drupal container using PHP 7.0 and HTTP/2 on Ubuntu 14.04 and configured with PHP tools.
 
 For example of how to use this container, see [docker-drupal-project-example](https://github.com/andrewholgate/docker-drupal-project-example)
 
@@ -19,11 +19,11 @@ For example of how to use this container, see [docker-drupal-project-example](ht
 
 # Installation
 
-## Create Presistant Database data-only container
+## Create persistent database data-only container
 
 ```bash
 # Build database image based off MySQL 5.7
-sudo docker run -d --name mysql-drupal-php69 mysql:5.7 --entrypoint /bin/echo MySQL data-only container for Drupal PHP 7.0 MySQL
+sudo docker run -d --name mysql-drupal-php70 mysql:5.7 --entrypoint /bin/echo MySQL data-only container for Drupal PHP 7.0 MySQL
 ```
 
 ## Build Drupal Base Image
