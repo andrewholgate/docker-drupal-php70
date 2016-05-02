@@ -1,4 +1,4 @@
-Dockerised Drupal container using PHP 7.0 and HTTP/2 on Ubuntu 14.04 and configured with PHP tools.
+Dockerised Drupal container using PHP 7.0 and HTTP/2 on Ubuntu 16.04 and configured with PHP tools.
 
 For example of how to use this container, see [docker-drupal-project-example](https://github.com/andrewholgate/docker-drupal-project-example)
 
@@ -45,7 +45,7 @@ cp docker-compose.yml.dist docker-compose.yml
 vim docker-compose.yml
 
 # Build docker containers using Docker Compose.
-sudo docker-compose build --no-cache
+sudo docker-compose build --no-cache | tee ./build.log
 sudo docker-compose up -d
 ```
 
