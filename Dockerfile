@@ -1,13 +1,14 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 MAINTAINER Andrew Holgate <andrewholgate@yahoo.com>
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install software-properties-common
 
-# Repositories for PHP7.0, Apache2 (with HTTP/2) and git
-RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/php && \
-    DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
+# Repositories for git and Apache2 with HTTP/2
+# HTTP/2 N/A in LTS build of Apache https://bugs.launchpad.net/ubuntu-release-notes/+bug/1531864
+RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ondrej/apache2 && \
     DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:git-core/ppa
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -16,39 +17,13 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 # I/O, Network Other useful troubleshooting tools, see: http://www.linuxjournal.com/magazine/hack-and-linux-troubleshooting-part-i-high-load
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install wget nano vim sysstat iotop htop ethtool nmap dnsutils traceroute
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install curl apache2 mysql-client supervisor libapache2-mod-fastcgi openssh-client make libpcre3-dev git
-
-# PHP 7.0
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y --force-yes install php7.0 php7.0-fpm php7.0-gd php7.0-mysql php7.0-curl php7.0-cli php7.0-common libapache2-mod-php7.0 php7.0-dev php7.0-mbstring
+# Server software and PHP 7.0
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install curl apache2 mysql-client supervisor openssh-client make libpcre3-dev git
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install php php-fpm php-gd php-mysql php-curl php-cli php-common libapache2-mod-php php-dev php-mbstring
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install bash-completion zip
 
-# Add ubuntu user.
-RUN useradd -ms /bin/bash ubuntu
-
-# Configure Apache
-COPY default.conf /etc/apache2/sites-available/default.conf
-COPY default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
-RUN a2enmod rewrite ssl && \
-    a2dissite 000-default && \
-    a2ensite default default-ssl
-
-# Disable all Apache modules (need to disable specific ones first to avoid error codes)
-RUN printf "*" | a2dismod -f
-# Only enable essential Apache modules.
-RUN a2enmod access_compat actions alias authz_host deflate dir expires headers mime rewrite ssl fastcgi proxy http2 mpm_event proxy_fcgi
-RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.conf
-
-# Allow for Overrides in path /var/www/
-RUN sed -i '166s/None/All/' /etc/apache2/apache2.conf && \
-    echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
-# Install Google Page Speed for Apache
-RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb && \
-    dpkg -i mod-pagespeed-stable_current_amd64.deb && \
-    rm mod-pagespeed-stable_current_amd64.deb
-
-# Install nghttp2
+# Install cURL with HTTP/2 support
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install g++ make binutils autoconf automake \
     autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libev-dev libevent-dev \
     libjansson-dev libjemalloc-dev cython python3-dev python-setuptools
@@ -72,11 +47,39 @@ RUN wget http://curl.haxx.se/download/curl-7.48.0.tar.gz && \
     make install && \
     cd .. && rm -Rf curl-7.48.0 curl-7.48.0.tar.gz
 
+# Add ubuntu user.
+RUN useradd -ms /bin/bash ubuntu
+
+# Configure Apache
+COPY default.conf /etc/apache2/sites-available/default.conf
+COPY default-ssl.conf /etc/apache2/sites-available/default-ssl.conf
+RUN a2enmod rewrite ssl && \
+    a2dissite 000-default && \
+    a2ensite default default-ssl
+
+# Disable all Apache modules (need to disable specific ones first to avoid error codes)
+RUN printf "*" | a2dismod -f
+# Only enable essential Apache modules.
+RUN a2enmod access_compat actions alias authz_host filter deflate dir expires headers mime setenvif rewrite socache_shmcb ssl proxy  mpm_event proxy_fcgi http2
+
+RUN sed -i "s/listen =.*/listen = 127.0.0.1:9000/" /etc/php/7.0/fpm/pool.d/www.conf
+
+# Allow for Overrides in path /var/www/
+RUN sed -i '166s/None/All/' /etc/apache2/apache2.conf && \
+    echo "ServerName localhost" >> /etc/apache2/apache2.conf && \
+    echo "ServerSignature Off" >> /etc/apache2/apache2.conf && \
+    echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
+
+# Install Google Page Speed for Apache
+RUN wget https://dl-ssl.google.com/dl/linux/direct/mod-pagespeed-stable_current_amd64.deb && \
+    dpkg -i mod-pagespeed-stable_current_amd64.deb && \
+    rm mod-pagespeed-stable_current_amd64.deb
+
 # Install Composer
 ENV COMPOSER_HOME /home/ubuntu/.composer
 RUN echo "export COMPOSER_HOME=/home/ubuntu/.composer" >> /etc/bash.bashrc && \
     php -r "readfile('https://getcomposer.org/installer');" > composer-setup.php && \
-    php -r "if (hash('SHA384', file_get_contents('composer-setup.php')) === '7228c001f88bee97506740ef0888240bd8a760b046ee16db8f4095c0d8d525f2367663f22a46b48d072c816e7fe19959') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+    php -r "if (hash_file('SHA384', 'composer-setup.php') === 'a52be7b8724e47499b039d53415953cc3d5b459b9d9c0308301f867921c19efc623b81dfef8fc2be194a5cf56945d223') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
     php composer-setup.php --filename=composer --install-dir=/usr/local/bin && \
     php -r "unlink('composer-setup.php');"
 
