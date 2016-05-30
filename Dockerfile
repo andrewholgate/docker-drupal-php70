@@ -107,6 +107,7 @@ RUN sed -ri 's/^;opcache.enable=0/opcache.enable=1/g' /etc/php/7.0/fpm/php.ini &
     sed -ri 's/^memory_limit\s*=\s*128M/memory_limit = 256M/g' /etc/php/7.0/fpm/php.ini && \
     sed -ri 's/^expose_php\s*=\s*On/expose_php = Off/g' /etc/php/7.0/fpm/php.ini && \
     sed -ri 's/^;date.timezone\s*=/date.timezone = "Europe\/Rome"/g' /etc/php/7.0/fpm/php.ini && \
+    sed -ri 's/^;date.timezone\s*=/date.timezone = "Europe\/Rome"/g' /etc/php/7.0/cli/php.ini && \
     sed -ri 's/^;error_log\s*=\s*syslog/error_log = syslog/g' /etc/php/7.0/cli/php.ini
 
 # Enable bash and git completion in interactive shells
